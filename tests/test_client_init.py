@@ -1,7 +1,5 @@
 """Smoke tests — no live API calls, just config wiring."""
 
-import os
-
 import pytest
 
 from manav import (
