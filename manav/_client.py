@@ -25,7 +25,6 @@ from manav._version import __version__
 from manav.exceptions import (
     APIError,
     AuthenticationError,
-    ManavError,
     NotFoundError,
     RateLimitError,
     ValidationError,
