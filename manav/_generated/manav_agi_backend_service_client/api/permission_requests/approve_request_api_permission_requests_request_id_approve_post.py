@@ -1,0 +1,202 @@
+from http import HTTPStatus
+from typing import Any
+from urllib.parse import quote
+from uuid import UUID
+
+import httpx
+
+from ... import errors
+from ...client import AuthenticatedClient, Client
+from ...models.http_validation_error import HTTPValidationError
+from ...models.permission_request_response import PermissionRequestResponse
+from ...models.permission_request_review_body import PermissionRequestReviewBody
+from ...types import UNSET, Response, Unset
+
+
+def _get_kwargs(
+    request_id: UUID,
+    *,
+    body: PermissionRequestReviewBody,
+    authorization: None | str | Unset = UNSET,
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
+    if not isinstance(authorization, Unset):
+        headers["authorization"] = authorization
+
+    _kwargs: dict[str, Any] = {
+        "method": "post",
+        "url": "/api/permission-requests/{request_id}/approve".format(
+            request_id=quote(str(request_id), safe=""),
+        ),
+    }
+
+    _kwargs["json"] = body.to_dict()
+
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
+
+
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> HTTPValidationError | PermissionRequestResponse | None:
+    if response.status_code == 200:
+        response_200 = PermissionRequestResponse.from_dict(response.json())
+
+        return response_200
+
+    if response.status_code == 422:
+        response_422 = HTTPValidationError.from_dict(response.json())
+
+        return response_422
+
+    if client.raise_on_unexpected_status:
+        raise errors.UnexpectedStatus(response.status_code, response.content)
+    else:
+        return None
+
+
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[HTTPValidationError | PermissionRequestResponse]:
+    return Response(
+        status_code=HTTPStatus(response.status_code),
+        content=response.content,
+        headers=response.headers,
+        parsed=_parse_response(client=client, response=response),
+    )
+
+
+def sync_detailed(
+    request_id: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+    body: PermissionRequestReviewBody,
+    authorization: None | str | Unset = UNSET,
+) -> Response[HTTPValidationError | PermissionRequestResponse]:
+    """Approve Request
+
+    Args:
+        request_id (UUID):
+        authorization (None | str | Unset): Bearer token
+        body (PermissionRequestReviewBody): Body for approve / deny — comment optional on approve,
+            required on deny.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[HTTPValidationError | PermissionRequestResponse]
+    """
+
+    kwargs = _get_kwargs(
+        request_id=request_id,
+        body=body,
+        authorization=authorization,
+    )
+
+    response = client.get_httpx_client().request(
+        **kwargs,
+    )
+
+    return _build_response(client=client, response=response)
+
+
+def sync(
+    request_id: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+    body: PermissionRequestReviewBody,
+    authorization: None | str | Unset = UNSET,
+) -> HTTPValidationError | PermissionRequestResponse | None:
+    """Approve Request
+
+    Args:
+        request_id (UUID):
+        authorization (None | str | Unset): Bearer token
+        body (PermissionRequestReviewBody): Body for approve / deny — comment optional on approve,
+            required on deny.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        HTTPValidationError | PermissionRequestResponse
+    """
+
+    return sync_detailed(
+        request_id=request_id,
+        client=client,
+        body=body,
+        authorization=authorization,
+    ).parsed
+
+
+async def asyncio_detailed(
+    request_id: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+    body: PermissionRequestReviewBody,
+    authorization: None | str | Unset = UNSET,
+) -> Response[HTTPValidationError | PermissionRequestResponse]:
+    """Approve Request
+
+    Args:
+        request_id (UUID):
+        authorization (None | str | Unset): Bearer token
+        body (PermissionRequestReviewBody): Body for approve / deny — comment optional on approve,
+            required on deny.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[HTTPValidationError | PermissionRequestResponse]
+    """
+
+    kwargs = _get_kwargs(
+        request_id=request_id,
+        body=body,
+        authorization=authorization,
+    )
+
+    response = await client.get_async_httpx_client().request(**kwargs)
+
+    return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    request_id: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+    body: PermissionRequestReviewBody,
+    authorization: None | str | Unset = UNSET,
+) -> HTTPValidationError | PermissionRequestResponse | None:
+    """Approve Request
+
+    Args:
+        request_id (UUID):
+        authorization (None | str | Unset): Bearer token
+        body (PermissionRequestReviewBody): Body for approve / deny — comment optional on approve,
+            required on deny.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        HTTPValidationError | PermissionRequestResponse
+    """
+
+    return (
+        await asyncio_detailed(
+            request_id=request_id,
+            client=client,
+            body=body,
+            authorization=authorization,
+        )
+    ).parsed

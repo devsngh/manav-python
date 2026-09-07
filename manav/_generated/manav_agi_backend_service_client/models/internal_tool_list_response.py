@@ -1,0 +1,107 @@
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar
+
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
+
+if TYPE_CHECKING:
+    from ..models.internal_tool_response import InternalToolResponse
+
+
+T = TypeVar("T", bound="InternalToolListResponse")
+
+
+@_attrs_define
+class InternalToolListResponse:
+    """
+    Attributes:
+        tools (list[InternalToolResponse]):
+        total (int):
+        page (int):
+        page_size (int):
+        total_pages (int):
+    """
+
+    tools: list[InternalToolResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        tools = []
+        for tools_item_data in self.tools:
+            tools_item = tools_item_data.to_dict()
+            tools.append(tools_item)
+
+        total = self.total
+
+        page = self.page
+
+        page_size = self.page_size
+
+        total_pages = self.total_pages
+
+        field_dict: dict[str, Any] = {}
+        field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "tools": tools,
+                "total": total,
+                "page": page,
+                "page_size": page_size,
+                "total_pages": total_pages,
+            }
+        )
+
+        return field_dict
+
+    @classmethod
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.internal_tool_response import InternalToolResponse  # noqa: PLC0415
+
+        d = dict(src_dict)
+        tools = []
+        _tools = d.pop("tools")
+        for tools_item_data in _tools:
+            tools_item = InternalToolResponse.from_dict(tools_item_data)
+
+            tools.append(tools_item)
+
+        total = d.pop("total")
+
+        page = d.pop("page")
+
+        page_size = d.pop("page_size")
+
+        total_pages = d.pop("total_pages")
+
+        internal_tool_list_response = cls(
+            tools=tools,
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+        )
+
+        internal_tool_list_response.additional_properties = d
+        return internal_tool_list_response
+
+    @property
+    def additional_keys(self) -> list[str]:
+        return list(self.additional_properties.keys())
+
+    def __getitem__(self, key: str) -> Any:
+        return self.additional_properties[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.additional_properties[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self.additional_properties[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.additional_properties
